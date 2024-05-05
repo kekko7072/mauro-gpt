@@ -20,7 +20,7 @@ The MauroGPT project is designed to be a student assistant of a specific subject
 ## Installation
 
 - `git clone [repository-url]`
-- `cd maurogpt`
+- `cd mauro-gpt`
 - `sh local.sh`
 - `https://localhost:8080`
 
