@@ -2,6 +2,8 @@
 
 The MauroGPT project is designed to facilitate server operations using Docker and Node.js. This project includes a Docker configuration to build and run your Node.js applications in a containerized environment. The backend utilizes Express.js for server operations and incorporates the Ollama library for additional functionalities.
 
+![MauroGPT Logo](logo.png)
+
 ## Features
 
 - *Docker Integration:* Simplified deployment using Docker containers.
