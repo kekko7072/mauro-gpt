@@ -4,8 +4,6 @@ The MauroGPT project is designed to facilitate server operations using Docker an
 
 ![MauroGPT Logo](logo.png)
 
-[Link to Mauro GPT](https://maurogpt-mk73qd6lfq-oc.a.run.app)
-
 
 ## Features
 
@@ -23,6 +21,8 @@ The MauroGPT project is designed to facilitate server operations using Docker an
 
 - `git clone [repository-url]`
 - `cd maurogpt`
+- `sh local.sh`
+- `https://localhost:8080`
 
 ## License
 

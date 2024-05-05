@@ -7,6 +7,12 @@ WORKDIR /usr/src/app
 # Copy the current directory contents into the container at /usr/src/app
 COPY . .
 
+# Pull phi3 inside
+COPY elaborate_model.sh elaborate_model.sh
+RUN chmod +x elaborate_model.sh
+RUN ./elaborate_model.sh
+
+
 # Install netcat
 RUN apt-get update && apt-get install -y netcat
 
@@ -24,9 +30,8 @@ EXPOSE 8080
 # Define environment variable
 ENV NODE_ENV=production
 
-# Copy the entrypoint script and make it executable
-COPY entrypoint.sh entrypoint.sh
-RUN chmod +x entrypoint.sh
-
 # Set the entrypoint script to be executed
-ENTRYPOINT ["./entrypoint.sh"]
+COPY execute.sh execute.sh
+RUN chmod +x execute.sh
+
+ENTRYPOINT ["./execute.sh"]
