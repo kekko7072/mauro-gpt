@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mauro GPT</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="center-container">
+        <pre id="ascii-art">
+███╗   ███╗ █████╗ ██╗   ██╗██████╗  ██████╗      ██████╗ ██████╗ ████████╗
+████╗ ████║██╔══██╗██║   ██║██╔══██╗██╔═══██╗    ██╔════╝ ██╔══██╗╚══██╔══╝
+██╔████╔██║███████║██║   ██║██████╔╝██║   ██║    ██║  ███╗██████╔╝   ██║   
+██║╚██╔╝██║██╔══██║██║   ██║██╔══██╗██║   ██║    ██║   ██║██╔═══╝    ██║   
+██║ ╚═╝ ██║██║  ██║╚██████╔╝██║  ██║╚██████╔╝    ╚██████╔╝██║        ██║   
+╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝      ╚═════╝ ╚═╝        ╚═╝   
+    </pre>
+        <div id="loader" class="loader" ></div>
+        <div id="chat-container" style="display: none;">
+            <textarea id="chat-input" placeholder="Ask your question here..."></textarea>
+            <button onclick="sendMessage()">Send</button>
+            <div id="loader-message" class="loader" style="display: none;"></div>
+            <div id="chat-output"></div>
+        </div>
+        <div id="error" class="error-message"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

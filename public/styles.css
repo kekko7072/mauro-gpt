@@ -1,0 +1,105 @@
+.center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+#ascii-art {
+    white-space: pre-wrap; /* Allows text to wrap */
+    word-break: break-word; /* Breaks the text at appropriate points */
+    font-family: monospace; /* Keeps the monospace font for ASCII art */
+}
+
+/* Responsive styles for devices with max-width of 600px */
+@media (max-width: 600px) {
+    #ascii-art {
+        font-size: 10px; /* Smaller font size on smaller screens */
+    }
+}
+@media (max-width: 500px) {
+    #ascii-art {
+        font-size: 8px; /* Smaller font size on smaller screens */
+    }
+}
+@media (max-width: 400px) {
+    #ascii-art {
+        font-size: 6px; /* Smaller font size on smaller screens */
+    }
+}
+
+#chat-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+#chat-input {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 10px;
+    padding: 10px;
+    box-sizing: border-box; /* Includes padding and border in the element's width and height */
+}
+
+#chat-output {
+    width: 100%; /* Full width of the parent container */
+    border: 1px solid #ccc; /* Subtle border color */
+    padding: 10px; /* Adequate padding around the text */
+    margin-top: 10px; /* Space above the container */
+    height: auto; /* Automatically adjusts based on content up to a maximum height */
+    max-height: 300px; /* Maximum height before scrolling begins */
+    overflow-y: auto; /* Allows scrolling vertically */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Easy-to-read font */
+    font-size: 1rem; /* Adequate font size for readability */
+    line-height: 1.6; /* Spacing between lines to enhance readability */
+    background-color: #f9f9f9; /* Light background color to reduce eye strain */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+    resize: vertical; /* Allow the user to resize the text area vertically */
+}
+
+/* Custom scrollbar for better visual integration */
+#chat-output::-webkit-scrollbar {
+    width: 8px; /* Narrow scrollbar to save space */
+}
+
+#chat-output::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Light background on the track */
+}
+
+#chat-output::-webkit-scrollbar-thumb {
+    background: #888; /* Darker color for the thumb for contrast */
+}
+
+#chat-output::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Slightly darker on hover for better interaction feedback */
+}
+
+
+.loader {
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto; /* Centers the loader horizontally */
+    border: 10px solid #f3f3f3;
+    border-top: 10px solid #000000;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+}
+
+.error-message {
+    color: red;
+    display: none; /* Ensure it's hidden by default */
+    margin-top: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
