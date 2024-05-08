@@ -1,6 +1,7 @@
-import ollama from "ollama";
+/*import ollama from "ollama";
 import * as fs from "fs";
 
+// @deprecated
 function modelfile(text: string): string {
   return `
 FROM phi3
@@ -28,3 +29,4 @@ export async function modelCreate() {
     modelfile: modelfile(text),
   });
 }
+*/

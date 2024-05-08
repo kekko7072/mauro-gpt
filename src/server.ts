@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import { chatWithModel } from "./chat";
-import { modelCreate } from "./model_create";
+//import { modelCreate } from "./model_create";
 import { configDotenv } from "dotenv";
 import cors from "cors";
 
@@ -34,13 +34,13 @@ app.use("/api", authenticateToken); // Protect all routes under '/api'
 app.post("/api/init", async (req: Request, res: Response) => {
   try {
     // 1. Create the chatbot
-    await modelCreate().then(() => {
-      // 3. Response
-      res.send({
-        success: true,
-        message: "Successfully initalisated!",
-      });
+    //await modelCreate().then(() => {
+    // 3. Response
+    res.send({
+      success: true,
+      message: "Successfully initalisated!",
     });
+    //});
   } catch (e) {
     console.error(e);
     res.send({

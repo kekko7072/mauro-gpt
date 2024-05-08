@@ -1,5 +1,5 @@
 import { chatWithModel } from "./chat";
-import { modelCreate } from "./model_create";
+//mport { modelCreate } from "./model_create";
 const readline = require("readline");
 
 const rl = readline.createInterface({
@@ -8,8 +8,16 @@ const rl = readline.createInterface({
 });
 
 async function initChat() {
+  console.log(String.raw`
+███╗   ███╗ █████╗ ██╗   ██╗██████╗  ██████╗      ██████╗ ██████╗ ████████╗
+████╗ ████║██╔══██╗██║   ██║██╔══██╗██╔═══██╗    ██╔════╝ ██╔══██╗╚══██╔══╝
+██╔████╔██║███████║██║   ██║██████╔╝██║   ██║    ██║  ███╗██████╔╝   ██║   
+██║╚██╔╝██║██╔══██║██║   ██║██╔══██╗██║   ██║    ██║   ██║██╔═══╝    ██║   
+██║ ╚═╝ ██║██║  ██║╚██████╔╝██║  ██║╚██████╔╝    ╚██████╔╝██║        ██║   
+╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝      ╚═════╝ ╚═╝        ╚═╝   
+`);
   const response = await chatWithModel(
-    "Presentati, raccontami chi sei e cosa fai. Risposta breve ma concisa con massimo 3 righe."
+    "Presentati, racconta chi sei e cosa fai. Risposta breve ma concisa con massimo 3 righe."
   );
   console.log(`${response}\n`);
 }
@@ -23,7 +31,7 @@ function startChat() {
   });
 }
 // 1. Create the chatbot
-modelCreate();
+//modelCreate();
 
 // 3. Init the chat
 initChat().then(() => {
