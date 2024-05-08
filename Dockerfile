@@ -20,9 +20,9 @@ COPY . .
 #RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Pull phi3 inside
-#COPY elaborate_model.sh elaborate_model.sh
-#RUN chmod +x elaborate_model.sh
-#RUN ./elaborate_model.sh
+COPY elaborate_model.sh elaborate_model.sh
+RUN chmod +x elaborate_model.sh
+RUN ./elaborate_model.sh
 
 # Install Node.js and TypeScript
 RUN apt-get update && apt-get install -y curl && \
