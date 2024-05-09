@@ -40,6 +40,8 @@ async function sendMessage() {
   loadingIndicator.style.display = "block"; // Show loading indicator
 
   try {
+    chatOutput.innerText += `You: ${message}\n`;
+
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: {
@@ -51,7 +53,7 @@ async function sendMessage() {
 
     if (response.ok) {
       const data = await response.json();
-      chatOutput.innerText += `${data.response}\n`;
+      chatOutput.innerText += `Mauro GPT: ${data.response}\n`;
     } else {
       console.error("Failed to send message");
       chatOutput.innerText += "Error: Could not receive a response.\n";
