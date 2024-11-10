@@ -1,37 +1,82 @@
-import * as fs from "fs";
-import * as readline from "readline";
-import * as path from "path";
+import axios from "axios";
 import ollama from "ollama";
 
-// Open a file and return paragraphs
-export async function parseFile(filename: string): Promise<string[]> {
-  const fileStream = fs.createReadStream(filename, { encoding: "utf8" });
-  const rl = readline.createInterface({
-    input: fileStream,
-    crlfDelay: Infinity,
-  });
+interface ApiResponse {
+  markdown: string;
+}
 
-  const paragraphs: string[] = [];
-  let buffer: string[] = [];
+export async function fetchDataIntoString(id: string): Promise<string> {
+  try {
+    const response = await axios({
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `https://api.cloud.llamaindex.ai/api/parsing/job/${id}/result/text`,
+      headers: {
+        Accept: "application/json",
+        Authorization:
+          "Bearer llx-Ga5W3vrn9mggiGt3jlBP5Snrg6rdsMZishyAvRo6f9Hh1r8s",
+      },
+    });
 
-  for await (const line of rl) {
-    const strippedLine = line.trim();
-    if (strippedLine) {
-      buffer.push(strippedLine);
-    } else if (buffer.length) {
-      paragraphs.push(buffer.join(" "));
-      buffer = [];
+    console.log("Fetched data from endpoint");
+    const text = response.data.text;
+
+    console.log("Parsed", text.length, "characters");
+
+    return text;
+  } catch (error) {
+    console.error("Error fetching data from endpoint:", error);
+    throw error;
+  }
+}
+
+// Fetch data from an endpoint and return paragraphs
+export async function fetchDataIntoPargraphs(id: string): Promise<string[]> {
+  try {
+    const response = await axios({
+      method: "get",
+      maxBodyLength: Infinity,
+      url: `https://api.cloud.llamaindex.ai/api/parsing/job/${id}/result/text`,
+      headers: {
+        Accept: "application/json",
+        Authorization:
+          "Bearer llx-Ga5W3vrn9mggiGt3jlBP5Snrg6rdsMZishyAvRo6f9Hh1r8s",
+      },
+    });
+
+    console.log("Fetched data from endpoint");
+    const text = response.data.text;
+
+    console.log("Parsed", text.length, "characters");
+
+    const paragraphs: string[] = [];
+    let buffer: string[] = [];
+
+    const lines = text.split("\n");
+    for (const line of lines) {
+      const strippedLine = line.trim();
+      if (strippedLine) {
+        buffer.push(strippedLine);
+      } else if (buffer.length) {
+        paragraphs.push(buffer.join(" "));
+        buffer = [];
+      }
     }
+    if (buffer.length) {
+      paragraphs.push(buffer.join(" "));
+    }
+
+    console.log("Parsed", paragraphs.length, "paragraphs");
+    return paragraphs;
+  } catch (error) {
+    console.error("Error fetching data from endpoint:", error);
+    throw error;
   }
-  if (buffer.length) {
-    paragraphs.push(buffer.join(" "));
-  }
-  console.log("Parsed", paragraphs.length, "paragraphs");
-  return paragraphs;
 }
 
 // Save embeddings to a JSON file
 export function saveEmbeddings(filename: string, embeddings: any): void {
+  const fs = require("fs");
   fs.writeFileSync(`${filename}.json`, JSON.stringify(embeddings));
 }
 
@@ -41,6 +86,8 @@ export async function getEmbeddings(
   modelname: string,
   chunks: string[]
 ): Promise<Vector[]> {
+  const fs = require("fs");
+
   // Check if embeddings are already saved
   let embeddings = loadEmbeddings(filename);
   if (embeddings !== false) {
@@ -62,7 +109,9 @@ export async function getEmbeddings(
   saveEmbeddings(filename, embeddings);
   return embeddings;
 }
+
 export function loadEmbeddings(filename: string) {
+  const fs = require("fs");
   const filePath = `${filename}.json`;
   if (!fs.existsSync(filePath)) {
     console.log("Embeddings file not found:", filePath);
@@ -94,16 +143,16 @@ export function findMostSimilar(
   return similarityScores.sort((a, b) => b[0] - a[0]);
 }
 
-export const SYSTEM_PROMPT_EN = `You are a helpful reading assistant who answers questions
-    based on snippets of text provided in context. Answer only using the context provided,
-    being as concise as possible. If you're unsure, just say that you don't know.
-    Context:
-  `;
-
-export const SYSTEM_PROMPT = `Sei un assistente di studio chiamato MauroGPT. 
-Sei specializzato nella materia di Macchine e Azionamenti Elettrici.
-Il tuo obiettivo è fornire assistenza educativa rispondendo alle domande relative a questo campo,
-utilizzando i pezzi di testo forniti come contesto.Rispondi solo utilizzanto il contesto fornito.
-Se non sai la risposta devi dire che non lo sai, non provare a inventare una risposta.
-Contesto:
+export const SYSTEM_PROMPT = `Sei MauroGPT, rispondi alle domande su Macchine e Azionamenti Elettrici.
+Il tuo obiettivo è fornire assistenza educativa rispondendo alle domande relative a questo campo.
 `;
+
+export function QUERY_PROMPT(article: string, question: string): string {
+  return `Utilizza l'articolo per ripondere alla domanda.
+Se non trovi la risposta nell'articolo scrivi "Non lo so".
+Articolo:
+${article}
+
+Domanda: ${question}
+`;
+}

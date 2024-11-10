@@ -4,13 +4,19 @@ import {
   findMostSimilar,
   getEmbeddings,
   loadEmbeddings,
-  parseFile,
+  fetchDataIntoPargraphs,
+  QUERY_PROMPT,
 } from "./embedding";
 import path from "path";
 
 export async function chatWithModel(input: string): Promise<string> {
+  // Job Id it's obtained from the LamaCloud platform
+
   const filename = path.join(__dirname, "extracted_text.txt");
-  const paragraphs = await parseFile(filename);
+
+  const paragraphs = await fetchDataIntoPargraphs(
+    "8718880c-8668-4e0e-9f2d-921ea73c6051"
+  );
 
   const embeddings = await getEmbeddings(
     filename,
@@ -40,9 +46,9 @@ export async function chatWithModel(input: string): Promise<string> {
     messages: [
       {
         role: "system",
-        content: SYSTEM_PROMPT + relevantParagraphs,
+        content: SYSTEM_PROMPT,
       },
-      { role: "user", content: input },
+      { role: "user", content: QUERY_PROMPT(relevantParagraphs, input) },
     ],
   });
 
