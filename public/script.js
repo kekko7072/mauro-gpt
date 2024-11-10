@@ -40,7 +40,7 @@ async function sendMessage() {
   loadingIndicator.style.display = "block"; // Show loading indicator
 
   try {
-    chatOutput.innerText += `You: ${message}\n`;
+    chatOutput.innerText += `You: ${message}\n\n`;
 
     const response = await fetch("/api/chat", {
       method: "POST",
@@ -53,7 +53,7 @@ async function sendMessage() {
 
     if (response.ok) {
       const data = await response.json();
-      chatOutput.innerText += `Mauro GPT: ${data.response}\n`;
+      chatOutput.innerText += `Mauro GPT: ${data.response}\n\n`;
     } else {
       console.error("Failed to send message");
       chatOutput.innerText += "Error: Could not receive a response.\n";
@@ -64,4 +64,9 @@ async function sendMessage() {
   } finally {
     loadingIndicator.style.display = "none"; // Hide loading indicator
   }
+}
+
+function clearMessages() {
+  const chatOutput = document.getElementById("chat-output");
+  chatOutput.innerHTML = ""; // Clears the chat output
 }

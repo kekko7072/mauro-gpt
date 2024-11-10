@@ -19,7 +19,10 @@
         <div id="loader" class="loader" ></div>
         <div id="chat-container" style="display: none;">
             <textarea id="chat-input" placeholder="Ask your question here..."></textarea>
-            <button onclick="sendMessage()">Send</button>
+            <div class="button-container">
+                <button onclick="sendMessage()">Send</button>
+                <button onclick="clearMessages()">Clear</button>
+            </div>
             <div id="loader-message" class="loader" style="display: none;"></div>
             <div id="chat-output"></div>
         </div>

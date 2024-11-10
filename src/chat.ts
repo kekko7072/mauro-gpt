@@ -6,23 +6,45 @@ import {
   loadEmbeddings,
   fetchDataIntoPargraphs,
   QUERY_PROMPT,
+  Vector,
 } from "./embedding";
 import path from "path";
+import { extractTextFromPDF, saveTextToFile } from "./pdf";
 
 export async function chatWithModel(input: string): Promise<string> {
-  // Job Id it's obtained from the LamaCloud platform
-
   const filename = path.join(__dirname, "extracted_text.txt");
 
-  const paragraphs = await fetchDataIntoPargraphs(
-    "8718880c-8668-4e0e-9f2d-921ea73c6051"
-  );
+  try {
+    // Extract text from the PDF
+    const extractedText = await extractTextFromPDF(
+      "docs/dispenseLibroZigliotto.pdf"
+    );
+    console.log("Extracted Text:", extractedText);
 
-  const embeddings = await getEmbeddings(
-    filename,
-    "nomic-embed-text",
-    paragraphs
-  );
+    // Define file path to save text
+    const filename = path.join(__dirname, "extracted_text.txt");
+
+    // Save extracted text to file
+    saveTextToFile(extractedText, filename);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+
+  let paragraphs: string[];
+  let embeddings: Vector[];
+
+  const loadedEmbeddings = loadEmbeddings(filename);
+  if (loadedEmbeddings) {
+    // If embeddings are loaded, set paragraphs and embeddings directly
+    paragraphs = await fetchDataIntoPargraphs(input); // Load paragraphs based on input or file content
+    embeddings = loadedEmbeddings;
+  } else {
+    // If no embeddings are loaded, fetch paragraphs and generate embeddings
+    paragraphs = await fetchDataIntoPargraphs(input);
+    embeddings = await getEmbeddings(filename, paragraphs);
+  }
+
+  console.log("Embeddings loaded: " + embeddings.length);
 
   const promptEmbedding = await ollama.embeddings({
     model: "nomic-embed-text",

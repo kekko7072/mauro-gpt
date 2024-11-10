@@ -1,128 +1,67 @@
-import axios from "axios";
-import ollama from "ollama";
+import * as fs from "fs";
+import * as path from "path";
+import * as use from "@tensorflow-models/universal-sentence-encoder";
+import * as tf from "@tensorflow/tfjs-node";
 
-interface ApiResponse {
-  markdown: string;
-}
+export type Vector = number[];
 
-export async function fetchDataIntoString(id: string): Promise<string> {
-  try {
-    const response = await axios({
-      method: "get",
-      maxBodyLength: Infinity,
-      url: `https://api.cloud.llamaindex.ai/api/parsing/job/${id}/result/text`,
-      headers: {
-        Accept: "application/json",
-        Authorization:
-          "Bearer llx-Ga5W3vrn9mggiGt3jlBP5Snrg6rdsMZishyAvRo6f9Hh1r8s",
-      },
-    });
+// Parse text into paragraphs
+export async function fetchDataIntoPargraphs(
+  fileContent: string
+): Promise<string[]> {
+  const paragraphs: string[] = [];
+  let buffer: string[] = [];
 
-    console.log("Fetched data from endpoint");
-    const text = response.data.text;
-
-    console.log("Parsed", text.length, "characters");
-
-    return text;
-  } catch (error) {
-    console.error("Error fetching data from endpoint:", error);
-    throw error;
-  }
-}
-
-// Fetch data from an endpoint and return paragraphs
-export async function fetchDataIntoPargraphs(id: string): Promise<string[]> {
-  try {
-    const response = await axios({
-      method: "get",
-      maxBodyLength: Infinity,
-      url: `https://api.cloud.llamaindex.ai/api/parsing/job/${id}/result/text`,
-      headers: {
-        Accept: "application/json",
-        Authorization:
-          "Bearer llx-Ga5W3vrn9mggiGt3jlBP5Snrg6rdsMZishyAvRo6f9Hh1r8s",
-      },
-    });
-
-    console.log("Fetched data from endpoint");
-    const text = response.data.text;
-
-    console.log("Parsed", text.length, "characters");
-
-    const paragraphs: string[] = [];
-    let buffer: string[] = [];
-
-    const lines = text.split("\n");
-    for (const line of lines) {
-      const strippedLine = line.trim();
-      if (strippedLine) {
-        buffer.push(strippedLine);
-      } else if (buffer.length) {
-        paragraphs.push(buffer.join(" "));
-        buffer = [];
-      }
-    }
-    if (buffer.length) {
+  for (const line of fileContent.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed) {
+      buffer.push(trimmed);
+    } else if (buffer.length) {
       paragraphs.push(buffer.join(" "));
+      buffer = [];
     }
-
-    console.log("Parsed", paragraphs.length, "paragraphs");
-    return paragraphs;
-  } catch (error) {
-    console.error("Error fetching data from endpoint:", error);
-    throw error;
   }
+  if (buffer.length) paragraphs.push(buffer.join(" "));
+
+  console.log("Parsed", paragraphs.length, "paragraphs");
+  return paragraphs;
 }
 
 // Save embeddings to a JSON file
-export function saveEmbeddings(filename: string, embeddings: any): void {
-  const fs = require("fs");
-  fs.writeFileSync(`${filename}.json`, JSON.stringify(embeddings));
+export function saveEmbeddings(filename: string, embeddings: Vector[]): void {
+  const filePath = path.resolve(__dirname, `${filename}.json`);
+  fs.writeFileSync(filePath, JSON.stringify(embeddings));
 }
 
 // Load embeddings from a JSON file
+export function loadEmbeddings(filename: string): Vector[] | false {
+  const filePath = path.resolve(__dirname, `${filename}.json`);
+  if (!fs.existsSync(filePath)) {
+    console.log("Embeddings file not found:", filePath);
+    return false;
+  }
+  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+}
+
+// Generate embeddings for text chunks locally using Universal Sentence Encoder
 export async function getEmbeddings(
   filename: string,
-  modelname: string,
   chunks: string[]
 ): Promise<Vector[]> {
-  const fs = require("fs");
-
-  // Check if embeddings are already saved
+  // Try to load saved embeddings first
   let embeddings = loadEmbeddings(filename);
-  if (embeddings !== false) {
-    return embeddings;
-  }
+  if (embeddings) return embeddings;
 
-  // Get embeddings from ollama
-  embeddings = await Promise.all(
-    chunks.map(async (chunk) => {
-      const result = await ollama.embeddings({
-        model: modelname,
-        prompt: chunk,
-      });
-      return result.embedding as Vector;
-    })
-  );
+  const model = await use.load();
+  const embeddingsTensor = await model.embed(chunks);
+  embeddings = embeddingsTensor.arraySync() as Vector[];
 
   // Save embeddings
   saveEmbeddings(filename, embeddings);
   return embeddings;
 }
 
-export function loadEmbeddings(filename: string) {
-  const fs = require("fs");
-  const filePath = `${filename}.json`;
-  if (!fs.existsSync(filePath)) {
-    console.log("Embeddings file not found:", filePath);
-    return false;
-  }
-  return JSON.parse(fs.readFileSync(filePath, { encoding: "utf8" }));
-}
-
-// Find cosine similarity of every chunk to a given embedding
-type Vector = number[];
-
+// Calculate cosine similarity
 function norm(vector: Vector): number {
   return Math.sqrt(vector.reduce((acc, val) => acc + val * val, 0));
 }
@@ -131,6 +70,7 @@ function dotProduct(a: Vector, b: Vector): number {
   return a.reduce((sum, val, idx) => sum + val * b[idx], 0);
 }
 
+// Find cosine similarity of every chunk to a given embedding
 export function findMostSimilar(
   needle: Vector,
   haystack: Vector[]
@@ -144,11 +84,14 @@ export function findMostSimilar(
 }
 
 export const SYSTEM_PROMPT = `Sei MauroGPT, rispondi alle domande su Macchine e Azionamenti Elettrici.
-Il tuo obiettivo è fornire assistenza educativa rispondendo alle domande relative a questo campo.
+Il tuo obiettivo è fornire assistenza educativa rispondendo alle domande relative a questo campo. La tua risposta è composta da cio che trovi nell'articolo fornito.
 `;
 
 export function QUERY_PROMPT(article: string, question: string): string {
-  return `Utilizza l'articolo per ripondere alla domanda.
+  console.log("Articolo:", article);
+  console.log("Domanda:", question);
+
+  return `Utilizza esclusivamente il contenuto presente nell'articolo per rispondere alla domanda.
 Se non trovi la risposta nell'articolo scrivi "Non lo so".
 Articolo:
 ${article}
