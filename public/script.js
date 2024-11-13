@@ -38,7 +38,7 @@ async function sendMessage() {
 
   try {
     const userMessageDiv = document.createElement("div");
-    userMessageDiv.innerHTML = `You: ${message}`;
+    userMessageDiv.innerHTML = `<b>You:</b> ${message}\n`;
     chatOutput.appendChild(userMessageDiv);
 
     const response = await fetch("/api/chat", {
@@ -53,7 +53,7 @@ async function sendMessage() {
     if (response.ok) {
       const data = await response.json();
       const botMessageDiv = document.createElement("div");
-      botMessageDiv.innerHTML = `Mauro GPT: ${data.response}`;
+      botMessageDiv.innerHTML = `<b>Mauro GPT:</b> ${data.response}\n`;
       chatOutput.appendChild(botMessageDiv);
 
       // Render LaTeX in the chat output using KaTeX
