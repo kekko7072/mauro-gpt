@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mauro GPT</title>
     <link rel="stylesheet" href="styles.css">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"></script>
 </head>
 <body>
     <div class="center-container">
@@ -16,7 +19,7 @@
 ██║ ╚═╝ ██║██║  ██║╚██████╔╝██║  ██║╚██████╔╝    ╚██████╔╝██║        ██║   
 ╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝      ╚═════╝ ╚═╝        ╚═╝   
     </pre>
-        <div id="loader" class="loader" ></div>
+         <div id="loader" class="loader" ></div>
         <div id="chat-container" style="display: none;">
             <textarea id="chat-input" placeholder="Ask your question here..."></textarea>
             <div class="button-container">
@@ -27,7 +30,10 @@
             <div id="chat-output"></div>
         </div>
         <div id="error" class="error-message"></div>
+         
     </div>
+   
+       
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("Intialisation process.");
+  console.log("Initialization process.");
   fetch("/api/init", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer 228138a79a8f67f6aa", // Replace YOUR_ACCESS_TOKEN with your actual token
+      Authorization: "Bearer 228138a79a8f67f6aa", // Replace with actual token
     },
   })
     .then((response) => {
@@ -14,11 +14,8 @@ document.addEventListener("DOMContentLoaded", function () {
     .then((data) => {
       console.log("Init data received:", data);
       if (data.success) {
-        // Remove loader
         document.getElementById("loader").style.display = "none";
-        // Show the content only after successful API response
         document.getElementById("chat-container").style.display = "block";
-        document.getElementById("loader").style.display = "none";
       } else {
         console.error("Failed to fetch init data:", data);
         document.getElementById("error").textContent = data.message;
@@ -40,7 +37,9 @@ async function sendMessage() {
   loadingIndicator.style.display = "block"; // Show loading indicator
 
   try {
-    chatOutput.innerText += `You: ${message}\n\n`;
+    const userMessageDiv = document.createElement("div");
+    userMessageDiv.innerHTML = `You: ${message}`;
+    chatOutput.appendChild(userMessageDiv);
 
     const response = await fetch("/api/chat", {
       method: "POST",
@@ -53,16 +52,31 @@ async function sendMessage() {
 
     if (response.ok) {
       const data = await response.json();
-      chatOutput.innerText += `Mauro GPT: ${data.response}\n\n`;
+      const botMessageDiv = document.createElement("div");
+      botMessageDiv.innerHTML = `Mauro GPT: ${data.response}`;
+      chatOutput.appendChild(botMessageDiv);
+
+      // Render LaTeX in the chat output using KaTeX
+      renderMathInElement(chatOutput, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true }, // Block formulas
+          { left: "$", right: "$", display: false }, // Inline formulas
+        ],
+      });
     } else {
       console.error("Failed to send message");
-      chatOutput.innerText += "Error: Could not receive a response.\n";
+      const errorDiv = document.createElement("div");
+      errorDiv.innerHTML = "Error: Could not receive a response.";
+      chatOutput.appendChild(errorDiv);
     }
   } catch (error) {
     console.error("Fetch error:", error);
-    chatOutput.innerText += "Error: Network problem.\n";
+    const errorDiv = document.createElement("div");
+    errorDiv.innerHTML = "Error: Network problem.";
+    chatOutput.appendChild(errorDiv);
   } finally {
     loadingIndicator.style.display = "none"; // Hide loading indicator
+    chatOutput.scrollTop = chatOutput.scrollHeight; // Scroll to the bottom
   }
 }
 

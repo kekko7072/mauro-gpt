@@ -80,6 +80,8 @@ export function findMostSimilar(
     return [dotProduct(needle, item) / (needleNorm * norm(item)), index];
   });
 
+  console.log("Similarity scores:", similarityScores);
+
   return similarityScores.sort((a, b) => b[0] - a[0]);
 }
 
@@ -88,9 +90,6 @@ Il tuo obiettivo è fornire assistenza educativa rispondendo alle domande relati
 `;
 
 export function QUERY_PROMPT(article: string, question: string): string {
-  console.log("Articolo:", article);
-  console.log("Domanda:", question);
-
   return `Utilizza esclusivamente il contenuto presente nell'articolo per rispondere alla domanda.
 Se non trovi la risposta nell'articolo scrivi "Non lo so".
 Articolo:

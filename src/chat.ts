@@ -14,33 +14,27 @@ import { extractTextFromPDF, saveTextToFile } from "./pdf";
 export async function chatWithModel(input: string): Promise<string> {
   const filename = path.join(__dirname, "extracted_text.txt");
 
-  try {
-    // Extract text from the PDF
-    const extractedText = await extractTextFromPDF(
-      "docs/dispenseLibroZigliotto.pdf"
-    );
-    console.log("Extracted Text:", extractedText);
+  // Extract text from the PDF
+  const extractedText = await extractTextFromPDF(
+    "docs/dispenseLibroZigliotto.pdf"
+  );
 
-    // Define file path to save text
-    const filename = path.join(__dirname, "extracted_text.txt");
-
-    // Save extracted text to file
-    saveTextToFile(extractedText, filename);
-  } catch (error) {
-    console.error("Error:", error);
-  }
+  // Save extracted text to file
+  saveTextToFile(extractedText, filename);
 
   let paragraphs: string[];
   let embeddings: Vector[];
 
   const loadedEmbeddings = loadEmbeddings(filename);
+
   if (loadedEmbeddings) {
     // If embeddings are loaded, set paragraphs and embeddings directly
-    paragraphs = await fetchDataIntoPargraphs(input); // Load paragraphs based on input or file content
+    paragraphs = await fetchDataIntoPargraphs(extractedText); // Load paragraphs based on input or file content
     embeddings = loadedEmbeddings;
   } else {
+    console.log("No embeddings found, generating new embeddings...");
     // If no embeddings are loaded, fetch paragraphs and generate embeddings
-    paragraphs = await fetchDataIntoPargraphs(input);
+    paragraphs = await fetchDataIntoPargraphs(extractedText);
     embeddings = await getEmbeddings(filename, paragraphs);
   }
 
@@ -56,12 +50,14 @@ export async function chatWithModel(input: string): Promise<string> {
     embeddings
   ).slice(0, 5);
 
+  console.log("Most similar chunks:", mostSimilarChunks);
+
+  //console.log("Paragraphs:", paragraphs);
+
   // Construct a context that includes relevant paragraphs based on the similarity scores
   const relevantParagraphs = mostSimilarChunks
     .map((item) => paragraphs[item[1]])
     .join("\n");
-
-  console.log("Model context:", relevantParagraphs); // This will show the actual text being used as context
 
   const response = await ollama.chat({
     model: "phi3",
